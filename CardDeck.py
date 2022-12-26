@@ -38,7 +38,7 @@ class Card:
 
 class Deck:
     def __init__(self) -> None:
-        deck = []
+        cards = []
         suits = [Suit.CLUBS, Suit.SPADES, Suit.DIAMONDS, Suit.HEARTS]
         for sui in suits:
             if sui in [Suit.CLUBS, Suit.SPADES]:
@@ -46,18 +46,18 @@ class Deck:
             else:
                 col = Colour.RED
             for i in range(1, 14):
-                deck.append(Card(col, sui, i))
-        self.deck = deck
+                cards.append(Card(col, sui, i))
+        self.cards = cards
 
     def getCard(self, index) -> Card:
-        return self.deck[index]
+        return self.cards[index]
 
     def __str__(self) -> str:
         deck_str = ""
-        for card in self.deck:
+        for card in self.cards:
             deck_str += str(card) + "\n"
         return deck_str
 
     def shuffle(self):
         """ Randomizes the order of the contained card classes """
-        random.shuffle(self.deck)
+        random.shuffle(self.cards)

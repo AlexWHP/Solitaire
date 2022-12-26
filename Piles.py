@@ -57,4 +57,3 @@ class Stock(Piles):
     """ Rotating deck of cards to be pulled into the Foundations or Tableau"""
     def rotate(self):
         self.stack.insert(0, self.stack.pop())
-    

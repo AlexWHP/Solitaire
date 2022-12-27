@@ -17,11 +17,15 @@ class Card:
         self.colour = colour
         self.suit = suit
         self.value = value
-        self.hidden = False
+        self.hidden = True
         self.pile = None
     def changePile(self, new_pile) -> None:
         """  Called if a card is succesfully changed from one pile to another """
         self.pile = new_pile
+    def reveal(self):
+        self.hidden = False
+    def hide(self):
+        self.hidden = True
     def __str__(self) -> str:
         if self.hidden == False:
             if self.value <= 10:
@@ -51,13 +55,17 @@ class Deck:
 
     def getCard(self, index) -> Card:
         return self.cards[index]
-
+    def getCards(self):
+        return self.cards
     def __str__(self) -> str:
         deck_str = ""
         for card in self.cards:
             deck_str += str(card) + "\n"
         return deck_str
 
+    def hideCards(self):
+        for card in self.getCards():
+            card.hide()
     def shuffle(self):
         """ Randomizes the order of the contained card classes """
         random.shuffle(self.cards)

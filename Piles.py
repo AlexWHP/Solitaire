@@ -9,8 +9,8 @@ class Piles:
         self.stack = cards
     def getTopCard(self):
         """ Returns the top card of the pile """
-        if len(self.stack) > 0:
-            return self.stack[-1]
+        if len(self.getStack()) > 0:
+            return self.getStack()[-1]
         return None
     def validMove(self):
         """ Determines if a card is able to be added on top of another from the pile """
@@ -27,9 +27,11 @@ class Foundation(Piles):
     """ Initially empty but aimed to be filled with a single ordered suit """
     def validMove(self, card):
         """ Valid if an ace is moved onto an empty foundation or is the same suit and one value higher than the current top card """
-        if len(self.stack) > 0:
+        stack = self.getStack()
+        if len(stack) > 0:
             return card.value == 1
-        return card.suit != self.stack[-1].suit and self.stack[-1].value == card.value + 1
+        current_card = stack.getTopCard()
+        return card.getSuit() != current_card.getSuit() and current_card.getValue() == card.getValue() + 1
     def addCards(self, cards):
         """ Only singular cards can be added onto the foundation piles """
         if len(cards) == 1 and self.validMove(cards[0]):
@@ -46,7 +48,7 @@ class Tableau(Piles):
         if current_card == None:
             return add_card.value == 13
         # The tableau contains a card of opposite value that is one less than the card to add
-        return add_card.colour != current_card.colour and add_card.value == current_card.value - 1
+        return add_card.getColour() != current_card.getColour() and add_card.getValue() == current_card.getValue() - 1
 
     def addCards(self, cards):
         """ Appends the cards to the tableau if it's a valid move """

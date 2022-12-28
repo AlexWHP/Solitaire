@@ -18,25 +18,34 @@ class Card:
         self.suit = suit
         self.value = value
         self.hidden = True
-        self.pile = None
-    def changePile(self, new_pile) -> None:
-        """  Called if a card is succesfully changed from one pile to another """
-        self.pile = new_pile
     def reveal(self):
         self.hidden = False
     def hide(self):
         self.hidden = True
+
+    def getColour(self):
+        return self.colour
+    def getSuit(self):
+        return self.suit
+    def getValue(self):
+        return self.value
+    def getHidden(self):
+        return self.hidden
+
     def __str__(self) -> str:
         if self.hidden == False:
-            if self.value <= 10:
-                card_val = str(self.value)
-            elif self.value == 11:
+            value = self.getValue()
+            if value == 1:
+                card_val = "A"
+            elif value <= 10:
+                card_val = str(value)
+            elif value == 11:
                 card_val = "J"
-            elif self.value == 12:
+            elif value == 12:
                 card_val = "Q"
-            elif self.value == 13:
+            elif value == 13:
                 card_val = "K"
-            return self.colour.name + " " + self.suit.name[0] + " " + card_val
+            return self.getColour().name[0] + " " + self.getSuit().name[0] + " " + card_val
         else:
             return "Card is hidden"
 
@@ -57,6 +66,7 @@ class Deck:
         return self.cards[index]
     def getCards(self):
         return self.cards
+        
     def __str__(self) -> str:
         deck_str = ""
         for card in self.cards:

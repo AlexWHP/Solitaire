@@ -3,6 +3,11 @@ from Piles import *
 
 class Solitaire:
     def __init__(self) -> None:
+        """ Generates the deck and the piles of the game """
+        pass
+        
+    def createGame(self):
+        """ Creates the deck and the piles of the game """
         self.deck = Deck()
         self.foundations = dict.fromkeys({temp: []for temp in range(4)}, Foundation())
         for i in self.foundations:
@@ -11,15 +16,16 @@ class Solitaire:
         for i in self.tableaus:
             self.tableaus[i] = Tableau()
         self.stock = Stock()
-        
-    def createGame(self):
-        """ Resets all variables and """
+        self.resetGame()
+
+    def resetGame(self):
+        """ Resets the game of Solitaire """
         deck = self.getDeck()
         deck.hideCards()
         deck.shuffle()
         deck_index = 0
         # Populate the tableaus
-        for i in range(len(self.tableaus)):
+        for i in range(len(self.getTableaus())):
             cards = []
             for j in range(i + 1):
                 card = deck.getCard(deck_index)

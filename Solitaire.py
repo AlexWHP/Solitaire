@@ -46,6 +46,9 @@ class Solitaire:
     def getDeck(self) -> Deck():
         """  Returns the deck of cards associated with the game """
         return self.deck
+    def getFoundations(self) -> Foundation:
+        """ Returns the foundations of the game"""
+        return self.foundations
     def getTableau(self, index) -> Tableau:
         """ Returns the tableau of a specific column """
         return self.tableaus[index]

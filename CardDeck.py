@@ -47,7 +47,7 @@ class Card:
                 card_val = "K"
             return self.getColour().name[0] + " " + self.getSuit().name[0] + " " + card_val
         else:
-            return "Card is hidden"
+            return ""
 
 class Deck:
     def __init__(self) -> None:

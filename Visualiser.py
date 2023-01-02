@@ -22,22 +22,87 @@ class CardRender:
             (x + width, y + height),
             (x + width, y)
         ]
-    def render(self, screen) -> None:
+    def render(self, screen, font) -> None:
         """ Renders the card, icons, and numbers on the screen """
+        card = self.getCard()
+        x, y = self.getPosition()
+
+        # Rendering of the card
         pygame.draw.polygon(screen, (200, 200, 200), self.getVertices())
+        pygame.draw.lines(screen, (0, 0, 0), True, self.getVertices())
+        # Rendering of the suit
+        text_surface = font.render(str(card), False, (0, 0, 0))
+        screen.blit(text_surface, (x, y))
+        # Rendering of the number
 
     def getPosition(self):
         return self.position
+    def getCard(self):
+        return self.card
     def getSideLengths(self):
         return self.width, self.height
     def getVertices(self):
         return self.vertices
+
+class PileRender:
+    def __init__(self, position, pile) -> None:
+        self.position = position
+        self.pile = pile
+
+    def render(self, screen, font):
+        raise NotImplementedError
+
+    def getPosition(self):
+        return self.position
+    def getPile(self):
+        return self.pile
+
+class FoundationRender(PileRender):
+    def __init__(self, position, foundation) -> None:
+        super().__init__(position, foundation)
+
+    def render(self, screen, font):
+        """ Renders the foundation cards horizontally """
+        foundation = self.getPile()
+        cards = foundation.getStack()
+        for i in range(len(cards)):
+            x, y = self.getPosition()
+            c = CardRender((x + 100 * i, y), cards[i])
+            c.render(screen, font)
+
+class TableauRender(PileRender):
+    def __init__(self, position, tableau) -> None:
+        super().__init__(position, tableau)
+
+    def render(self, screen, font):
+        """ Renders the cards of the tableau decending from the top card """
+        tableau = self.getPile()
+        cards = tableau.getStack()
+        for i in range(len(cards)):
+            x, y = self.getPosition()
+            c = CardRender((x, y + 50 * i), cards[i])
+            c.render(screen, font)
+
+
+class StockRender(PileRender):
+    def __init__(self, position, stock) -> None:
+        super().__init__(position, stock)
+
+    def render(self, screen, font):
+        stock = self.getPile()
+        cards = stock.getStack()
+        x, y = self.getPosition()
+        c = CardRender((x, y), cards[-1])
+        c.render(screen, font)
+        c = CardRender((x + 100, y), cards[-2])
+        c.render(screen, font)
 
 class SolitaireRender(Solitaire):
     def __init__(self):
         self.terminated = False
     def render(self):
         pygame.init()
+        font = pygame.font.SysFont("Comic Sans MS", 30)
         screen = pygame.display.set_mode((1400, 800))
         pygame.display.set_caption('Solitaire')
         # Sets Font
@@ -51,10 +116,21 @@ class SolitaireRender(Solitaire):
                     self.terminated = True
             # Fill the background with white
             screen.fill((255, 255, 255))
-            # Draw a solid blue circle in the center
-            pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
-            c = CardRender((500, 500), self.deck.getCard(1))
-            c.render(screen)
+
+            # Rendering the foundations
+            fons = self.getFoundations()
+            for i in range(len(fons)):
+                f = FoundationRender((0 + i * 100, 0), fons[i])
+                f.render(screen, font)
+            # Rendering the tableaus
+            tabs = self.getTableaus()
+            for i in range(len(tabs)):
+                t = TableauRender((400 + i * 100, 200), tabs[i])
+                t.render(screen, font)
+            # Rendering the stocks
+            s = StockRender((600, 0), self.getStock())
+            s.render(screen, font)
+
             # Flip the display
             pygame.display.flip()
         # Ending the game
@@ -65,5 +141,4 @@ def main():
     s = SolitaireRender()
     s.createGame()
     s.render()
-    print(s)
 main()

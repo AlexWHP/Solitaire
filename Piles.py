@@ -22,6 +22,8 @@ class Piles:
         """ Checks if a card can be removed from the pile """
         stack = self.getStack()
         stack = stack[:stack.index(cards[0])]
+    def render(self, pygame, screen, font, position):
+        raise NotImplementedError
 
 class Foundation(Piles):
     """ Initially empty but aimed to be filled with a single ordered suit """
@@ -38,6 +40,12 @@ class Foundation(Piles):
             self.stack += cards
             return True
         return False
+    def render(self, pygame, screen, font, position):
+        """ Renders the foundation cards horizontally """
+        cards = self.getStack()
+        x, y = position
+        for i in range(len(cards)):
+            cards[i].render(pygame, screen, font, (x + i * 100, y), (80, 120))
 
 class Tableau(Piles):
     """ Workspace to help transfer cards to the Tableau """
@@ -56,11 +64,23 @@ class Tableau(Piles):
             self.stack += cards
             return True
         return False
+    def render(self, pygame, screen, font, position):
+        """ Renders the cards of the tableau decending from the top card """
+        cards = self.getStack()
+        x, y = position
+        for i in range(len(cards)):
+            cards[i].render(pygame, screen, font, (x, y + i * 50), (80, 120))
     
 class Stock(Piles):
     """ Rotating deck of cards to be pulled into the Foundations or Tableau"""
     def rotate(self):
         """ Takes the current top card an inserts it into the bottom of the stock """
         self.stack.insert(0, self.stack.pop())
+    def render(self, pygame, screen, font, position):
+        """ Renders the cards of the tableau decending from the top card """
+        x, y = position
+        cards = self.getStack()
+        cards[-1].render(pygame, screen, font, (x, y), (80, 120))
+        cards[-2].render(pygame, screen, font, (x + 100, y), (80, 120))
 
         

@@ -4,10 +4,6 @@ from Piles import *
 class Solitaire:
     def __init__(self) -> None:
         """ Generates the deck and the piles of the game """
-        pass
-        
-    def createGame(self):
-        """ Creates the deck and the piles of the game """
         self.deck = Deck()
         self.foundations = dict.fromkeys({temp: []for temp in range(4)}, Foundation())
         for i in self.foundations:
@@ -75,3 +71,15 @@ class Solitaire:
         tab += "\n"
         output += tab
         return output
+
+    def render(self, pygame, screen, font):
+        """ Renders the Solitaire game given its current state """
+        fons = self.getFoundations()
+        for i in range(len(fons)):
+            fons[i].render(pygame, screen, font, (0 + 100 * i, 0))
+        # Rendering the tableaus
+        tabs = self.getTableaus()
+        for i in range(len(tabs)):
+            tabs[i].render(pygame, screen, font, (400 + i * 100, 200))
+        # Rendering the stocks
+        self.getStock().render(pygame, screen, font, (600, 0))

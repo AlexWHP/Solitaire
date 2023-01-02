@@ -31,7 +31,7 @@ class Card:
         return self.value
     def getHidden(self):
         return self.hidden
-
+        
     def __str__(self) -> str:
         if self.hidden == False:
             value = self.getValue()

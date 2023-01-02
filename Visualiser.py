@@ -4,6 +4,35 @@ from Piles import *
 
 import pygame
 
+class CardRender:
+    def __init__(self, position, card) -> None:
+        self.position = position
+        self.card = card
+        self.width = 80
+        self.height = 140
+        self.vertices = self.computeVertices()
+
+    def computeVertices(self) -> list[tuple[float, float]]:
+        """ Returns a list of vertices of the card as x, y tuples"""
+        x, y = self.getPosition()
+        width, height = self.getSideLengths()
+        return [
+            (x, y),
+            (x, y + height),
+            (x + width, y + height),
+            (x + width, y)
+        ]
+    def render(self, screen) -> None:
+        """ Renders the card, icons, and numbers on the screen """
+        pygame.draw.polygon(screen, (200, 200, 200), self.getVertices())
+
+    def getPosition(self):
+        return self.position
+    def getSideLengths(self):
+        return self.width, self.height
+    def getVertices(self):
+        return self.vertices
+
 class SolitaireRender(Solitaire):
     def __init__(self):
         self.terminated = False
@@ -24,6 +53,8 @@ class SolitaireRender(Solitaire):
             screen.fill((255, 255, 255))
             # Draw a solid blue circle in the center
             pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+            c = CardRender((500, 500), self.deck.getCard(1))
+            c.render(screen)
             # Flip the display
             pygame.display.flip()
         # Ending the game

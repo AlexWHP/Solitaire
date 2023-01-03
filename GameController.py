@@ -36,7 +36,6 @@ class GameController:
 
     def initialiseGame(self):
         self.game = Solitaire()
-        print(self.game)
         self.game_running = True
 
     def renderGame(self):

@@ -24,6 +24,10 @@ class Piles:
         if len(self.getStack()) > 0:
             return self.getStack()[-1]
         return None
+    def revealTopCard(self):
+        """ Reveals the top card of the pile """
+        if self.getTopCard() != None:
+            self.getTopCard().reveal()
     def validMove(self):
         """ Determines if a card is able to be added on top of another from the pile """
         raise NotImplementedError
@@ -33,7 +37,17 @@ class Piles:
     def removeCards(self, cards):
         """ Checks if a card can be removed from the pile """
         stack = self.getStack()
-        stack = stack[:stack.index(cards[0])]
+        if len(stack) > 1:
+            print(cards)
+            index = stack.index(cards[0])
+            if index != None:
+                self.setStack(stack[:index + 1])
+                self.revealTopCard()
+                return True
+        else:
+            self.setStack([])
+            return True
+        return False
     def collideWithPoint(self, point) -> bool:
         """ Checks if a point intersects with the pile """
         x1, y1 = point
@@ -73,14 +87,6 @@ class Foundation(Piles):
             cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
             self.setPosition(position)
             self.setSideLengths((card_width, card_height))
-    def collideWithCards(self, point) -> list[Card, Card]:
-        """ Checks if a point collides with a point """
-        # Searches the stack in reverse and returns the first card hit
-        cards = self.getStack()
-        for i in range(len(cards)):
-            if cards[i].collideWithPoint(point):
-                return cards[i:]
-        return None
 
 class Tableau(Piles):
     """ Workspace to help transfer cards to the Tableau """
@@ -99,6 +105,18 @@ class Tableau(Piles):
             self.stack += cards
             return True
         return False
+    
+    def collideWithCards(self, point) -> list[Card, Card]:
+        """ Checks if a point collides with a point """
+        # Searches the stack in reverse and returns the first card hit
+        cards = self.getStack()
+        for i in range(len(cards)):
+            if cards[i].collideWithPoint(point):
+                print(cards[i:])
+                if cards[i].getHidden():
+                    return cards[i:]
+        return None
+        
     def render(self, pygame, screen, font, position):
         """ Renders the cards of the tableau decending from the top card """
         cards = self.getStack()
@@ -124,7 +142,7 @@ class Stock(Piles):
         cards = self.getStack()
         card_width = 80
         card_height = 120
-        cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
-        cards[-2].render(pygame, screen, font, (x + 100, y), (card_width, card_height))
+        if len(cards) > 0:
+            cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
 
         

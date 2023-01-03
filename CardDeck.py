@@ -37,7 +37,7 @@ class Card:
     def getHidden(self):
         return self.hidden
     def getPositionAttributes(self):
-        return self.position, self.sideLengths
+        return self.position + self.sideLengths
     def setPositionAttributes(self, position, sideLengths):
         self.position = position
         self.sideLengths = sideLengths

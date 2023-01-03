@@ -11,7 +11,9 @@ class Solitaire:
         self.tableaus = dict.fromkeys({temp: []for temp in range(7)}, None)
         for i in self.tableaus:
             self.tableaus[i] = Tableau()
-        self.stock = Stock()
+        self.stock = dict.fromkeys({temp: []for temp in range(2)}, None)
+        for i in self.stock:
+            self.stock[i] = Stock()
         self.resetGame()
 
     def resetGame(self):
@@ -31,7 +33,9 @@ class Solitaire:
                 deck_index += 1
             self.getTableau(i).setStack(cards)
         # Populate the stock and reveal the top card of it
-        self.getStock().setStack(deck.getCards()[deck_index:])
+        stock = self.getStock()
+        stock[0].setStack(deck.getCards()[deck_index:-1])
+        stock[1].setStack([deck.getCards()[-1]])
         deck.getCard(-1).reveal()
 
     def moveCards(self, cards, origin, destination):
@@ -40,16 +44,28 @@ class Solitaire:
             origin.removeCards(cards)
 
     def mouseClick(self, point):
+        """ Handles the mouse click and the meaning it could have for the game """
         piles = self.getFoundations()
         for i in range(len(piles)):
             if piles[i].collideWithPoint(point):
                 print(piles[i])
+                return
         piles = self.getTableaus()
         for i in range(len(piles)):
             if piles[i].collideWithPoint(point):
                 print(piles[i])
-        if self.getStock().collideWithPoint(point):
-            print(self.getStock())
+                cards = piles[i].collideWithCards(point)
+                print(cards)
+                print()
+                if piles[i].removeCards(cards):
+                    return cards
+                return None
+        piles = self.getStock()
+        for i in range(len(piles)):
+            if piles[i].collideWithPoint(point):
+                print(piles[i])
+                return
+        return
     
     def getDeck(self) -> Deck():
         """  Returns the deck of cards associated with the game """
@@ -63,26 +79,8 @@ class Solitaire:
     def getTableaus(self) -> dict():
         """ Returns all of the tableaus of the game """
         return self.tableaus
-    def getStock(self) -> Stock:
+    def getStock(self) -> dict():
         return self.stock
-
-    def __str__(self) -> str:
-        output = ""
-        tab = ""
-        for tabs in self.getTableaus().values():
-            tab = ""
-            for card in tabs.getStack():
-                tab += str(card) + " | "
-            tab += "\n"
-            output += tab
-        output += "\n\n"
-
-        tab = ""
-        for card in self.getStock().getStack():
-            tab += str(card) + " | "
-        tab += "\n"
-        output += tab
-        return output
 
     def render(self, pygame, screen, font):
         """ Renders the Solitaire game given its current state """
@@ -94,4 +92,6 @@ class Solitaire:
         for i in range(len(tabs)):
             tabs[i].render(pygame, screen, font, (400 + i * 100, 200))
         # Rendering the stocks
-        self.getStock().render(pygame, screen, font, (600, 0))
+        sto = self.getStock()
+        for i in range(len(sto)):
+            sto[i].render(pygame, screen, font, (600, 0))

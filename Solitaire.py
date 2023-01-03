@@ -38,6 +38,18 @@ class Solitaire:
         """ Attempts to move the cards from the origin onto the destination """
         if destination.addCards(cards):
             origin.removeCards(cards)
+
+    def mouseClick(self, point):
+        piles = self.getFoundations()
+        for i in range(len(piles)):
+            if piles[i].collideWithPoint(point):
+                print(piles[i])
+        piles = self.getTableaus()
+        for i in range(len(piles)):
+            if piles[i].collideWithPoint(point):
+                print(piles[i])
+        if self.getStock().collideWithPoint(point):
+            print(self.getStock())
     
     def getDeck(self) -> Deck():
         """  Returns the deck of cards associated with the game """

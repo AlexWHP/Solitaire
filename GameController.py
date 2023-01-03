@@ -1,6 +1,4 @@
 from Solitaire import *
-from CardDeck import *
-from Piles import *
 
 import pygame
 
@@ -20,6 +18,11 @@ class GameController:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminated = True
+                # Determines if a card or foundation has been clicked
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    self.getGame().mouseClick(mouse_pos)
+
             
             # Fill the background with white
             self.screen.fill((255, 255, 255))
@@ -49,8 +52,3 @@ class GameController:
         return self.screen
     def getFont(self):
         return self.font
-
-def main():
-    """ Initialising values for Solitaire """
-    g = GameController()
-main()

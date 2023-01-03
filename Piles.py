@@ -1,12 +1,24 @@
+from CardDeck import Card
+
 class Piles:
     def __init__(self) -> None:
         self.stack = []
+        self.position = (0, 0)
+        self.side_length = (0, 0)
     def resetStack(self):
         self.stack = []
     def getStack(self):
         return self.stack
     def setStack(self, cards):
         self.stack = cards
+    def getPosition(self):
+        return self.position
+    def setPosition(self, position):
+        self.position = position
+    def getSideLengths(self):
+        return self.side_length
+    def setSideLengths(self, side_length):
+        self.side_length = side_length
     def getTopCard(self):
         """ Returns the top card of the pile """
         if len(self.getStack()) > 0:
@@ -22,7 +34,17 @@ class Piles:
         """ Checks if a card can be removed from the pile """
         stack = self.getStack()
         stack = stack[:stack.index(cards[0])]
-    def render(self, pygame, screen, font, position):
+    def collideWithPoint(self, point) -> bool:
+        """ Checks if a point intersects with the pile """
+        x1, y1 = point
+        x2, y2 = self.getPosition()
+        width, height = self.getSideLengths()
+        return x2 < x1 and x2 + width > x1 and y2 < y1 and y2 + height > y1
+    def collideWithCards(self, point) -> bool:
+        """ Checks if a point interacts with the cards within the pile """
+        raise NotImplementedError
+            
+    def render(self, pygame, screen, font, position) -> None:
         raise NotImplementedError
 
 class Foundation(Piles):
@@ -43,9 +65,22 @@ class Foundation(Piles):
     def render(self, pygame, screen, font, position):
         """ Renders the foundation cards horizontally """
         cards = self.getStack()
-        x, y = position
+        if len(cards) > 0:
+            x, y = position
+            
+            card_width = 80
+            card_height = 120
+            cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
+            self.setPosition(position)
+            self.setSideLengths((card_width, card_height))
+    def collideWithCards(self, point) -> list[Card, Card]:
+        """ Checks if a point collides with a point """
+        # Searches the stack in reverse and returns the first card hit
+        cards = self.getStack()
         for i in range(len(cards)):
-            cards[i].render(pygame, screen, font, (x + i * 100, y), (80, 120))
+            if cards[i].collideWithPoint(point):
+                return cards[i:]
+        return None
 
 class Tableau(Piles):
     """ Workspace to help transfer cards to the Tableau """
@@ -68,8 +103,15 @@ class Tableau(Piles):
         """ Renders the cards of the tableau decending from the top card """
         cards = self.getStack()
         x, y = position
+        card_width = 80
+        card_height = 120
+        card_gap = 50
+
         for i in range(len(cards)):
-            cards[i].render(pygame, screen, font, (x, y + i * 50), (80, 120))
+            cards[i].render(pygame, screen, font, (x, y + i * card_gap), (card_width, card_height))
+            cards[i].setPositionAttributes((x, y + i * card_gap), (card_width, card_height))
+        self.setPosition(position)
+        self.setSideLengths((card_width, card_height + card_gap * len(cards)))
     
 class Stock(Piles):
     """ Rotating deck of cards to be pulled into the Foundations or Tableau"""
@@ -80,7 +122,9 @@ class Stock(Piles):
         """ Renders the cards of the tableau decending from the top card """
         x, y = position
         cards = self.getStack()
-        cards[-1].render(pygame, screen, font, (x, y), (80, 120))
-        cards[-2].render(pygame, screen, font, (x + 100, y), (80, 120))
+        card_width = 80
+        card_height = 120
+        cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
+        cards[-2].render(pygame, screen, font, (x + 100, y), (card_width, card_height))
 
         

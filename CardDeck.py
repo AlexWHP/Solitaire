@@ -20,6 +20,9 @@ class Card:
         self.hidden = True
         # Rendering attributes
         self.card_col = (200, 200, 200)
+        
+        self.position = (0, 0)
+        self.sideLengths = (0, 0)
     def reveal(self):
         self.hidden = False
     def hide(self):
@@ -33,6 +36,11 @@ class Card:
         return self.value
     def getHidden(self):
         return self.hidden
+    def getPositionAttributes(self):
+        return self.position, self.sideLengths
+    def setPositionAttributes(self, position, sideLengths):
+        self.position = position
+        self.sideLengths = sideLengths
 
     def getCardColour(self):
         return self.card_col
@@ -54,7 +62,11 @@ class Card:
         else:
             return ""
 
-
+    def collideWithPoint(self, point):
+        x1, y1 = point
+        x2, y2, width, height = self.getPositionAttributes()
+        return x2 < x1 and x2 + width > x1 and y2 < y1 and y2 + height > y1
+    
     def computeVertices(self, position, side_lengths) -> list[tuple[float, float]]:
         """ Returns a list of vertices of the card as x, y tuples"""
         x, y = position

@@ -2,18 +2,18 @@ from CardDeck import *
 from Piles import *
 
 class Solitaire:
-    def __init__(self) -> None:
+    def __init__(self, card_width, card_height, card_colour, tab_offset) -> None:
         """ Generates the deck and the piles of the game """
-        self.deck = Deck()
-        self.foundations = dict.fromkeys({temp: []for temp in range(4)}, Foundation())
+        self.deck = Deck(card_width, card_height, card_colour)
+        self.foundations = dict.fromkeys({temp: []for temp in range(4)}, None)
         for i in self.foundations:
-            self.foundations[i] = Foundation()
+            self.foundations[i] = Foundation(card_width, card_height)
         self.tableaus = dict.fromkeys({temp: []for temp in range(7)}, None)
         for i in self.tableaus:
-            self.tableaus[i] = Tableau()
+            self.tableaus[i] = Tableau(card_width, card_height, tab_offset)
         self.stock = dict.fromkeys({temp: []for temp in range(2)}, None)
         for i in self.stock:
-            self.stock[i] = Stock()
+            self.stock[i] = Stock(card_width, card_height)
         self.resetGame()
 
     def resetGame(self):
@@ -48,26 +48,23 @@ class Solitaire:
         piles = self.getFoundations()
         for i in range(len(piles)):
             if piles[i].collideWithPoint(point):
-                print(piles[i])
                 return
         piles = self.getTableaus()
         for i in range(len(piles)):
             if piles[i].collideWithPoint(point):
-                print(piles[i])
+                # Updates the cards
                 cards = piles[i].collideWithCards(point)
-                print(cards)
-                print()
-                if piles[i].removeCards(cards):
-                    return cards
+                if cards != None:
+                    if piles[i].removeCards(cards):
+                        return cards
                 return None
         piles = self.getStock()
         for i in range(len(piles)):
             if piles[i].collideWithPoint(point):
-                print(piles[i])
                 return
         return
     
-    def getDeck(self) -> Deck():
+    def getDeck(self) -> Deck(int, int, tuple()):
         """  Returns the deck of cards associated with the game """
         return self.deck
     def getFoundations(self) -> Foundation:

@@ -3,7 +3,7 @@ from Solitaire import *
 import pygame
 
 class GameController:
-    def __init__(self) -> None:
+    def __init__(self, card_width, card_height, card_colour, tab_offset) -> None:
         """ Generates PyGame and initialises state"""
         self.game_running = False
         terminated = False
@@ -12,7 +12,7 @@ class GameController:
         pygame.display.set_caption('Solitaire')
         # Sets Font
         self.font = pygame.font.Font('freesansbold.ttf', 24)
-        self.initialiseGame()
+        self.initialiseGame(card_width, card_height, card_colour, tab_offset)
         while not terminated:
             # Checks for events from the window
             for event in pygame.event.get():
@@ -34,8 +34,8 @@ class GameController:
         # Ending the game
         pygame.quit()
 
-    def initialiseGame(self):
-        self.game = Solitaire()
+    def initialiseGame(self, card_width, card_height, card_colour, tab_offset):
+        self.game = Solitaire(card_width, card_height, card_colour, tab_offset)
         self.game_running = True
 
     def renderGame(self):

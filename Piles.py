@@ -1,24 +1,25 @@
 from CardDeck import Card
 
 class Piles:
-    def __init__(self) -> None:
+    def __init__(self, card_width, card_height) -> None:
         self.stack = []
-        self.position = (0, 0)
-        self.side_length = (0, 0)
+        self.pileAttributes = {"Position": (0, 0), "SideLengths": (card_width, card_height)}
     def resetStack(self):
         self.stack = []
     def getStack(self):
         return self.stack
     def setStack(self, cards):
         self.stack = cards
+
     def getPosition(self):
-        return self.position
+        return self.pileAttributes["Position"]
     def setPosition(self, position):
-        self.position = position
+        self.pileAttributes["Position"] = position
     def getSideLengths(self):
-        return self.side_length
+        return self.pileAttributes["SideLengths"]
     def setSideLengths(self, side_length):
-        self.side_length = side_length
+        self.pileAttributes["SideLengths"] = side_length
+        
     def getTopCard(self):
         """ Returns the top card of the pile """
         if len(self.getStack()) > 0:
@@ -35,13 +36,12 @@ class Piles:
         """ Adds a card to the top of the pile """
         raise NotImplementedError
     def removeCards(self, cards):
-        """ Checks if a card can be removed from the pile """
+        """ Removes cards from a pile """
         stack = self.getStack()
         if len(stack) > 1:
-            print(cards)
             index = stack.index(cards[0])
             if index != None:
-                self.setStack(stack[:index + 1])
+                self.setStack(stack[:index])
                 self.revealTopCard()
                 return True
         else:
@@ -81,14 +81,19 @@ class Foundation(Piles):
         cards = self.getStack()
         if len(cards) > 0:
             x, y = position
-            
-            card_width = 80
-            card_height = 120
-            cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
+            cards[-1].render(pygame, screen, font, (x, y))
             self.setPosition(position)
-            self.setSideLengths((card_width, card_height))
 
 class Tableau(Piles):
+    def __init__(self, card_width, card_height, card_offset) -> None:
+        super().__init__(card_width, card_height)
+        self.card_offset = card_offset
+
+    def getCardOffset(self):
+        return self.card_offset
+    def setCardOffset(self, card_offset):
+        self.card_offset = card_offset
+
     """ Workspace to help transfer cards to the Tableau """
     def validMove(self, add_card):
         """ Valid if the selected card can be placed on top of this card (Others can be assumed valid) """
@@ -106,14 +111,22 @@ class Tableau(Piles):
             return True
         return False
     
+    def collideWithPoint(self, point) -> bool:
+        """ Checks if a point intersects with the tableau """
+        card_num = len(self.getStack())
+        x1, y1 = point
+        x2, y2 = self.getPosition()
+        width, height = self.getSideLengths()
+        height = height + card_num * self.getCardOffset()
+        return x2 < x1 and x2 + width > x1 and y2 < y1 and y2 + height > y1
+
     def collideWithCards(self, point) -> list[Card, Card]:
         """ Checks if a point collides with a point """
         # Searches the stack in reverse and returns the first card hit
         cards = self.getStack()
-        for i in range(len(cards)):
+        for i in range(len(cards)-1, -1, -1):
             if cards[i].collideWithPoint(point):
-                print(cards[i:])
-                if cards[i].getHidden():
+                if not cards[i].getHidden():
                     return cards[i:]
         return None
         
@@ -121,15 +134,10 @@ class Tableau(Piles):
         """ Renders the cards of the tableau decending from the top card """
         cards = self.getStack()
         x, y = position
-        card_width = 80
-        card_height = 120
-        card_gap = 50
-
         for i in range(len(cards)):
-            cards[i].render(pygame, screen, font, (x, y + i * card_gap), (card_width, card_height))
-            cards[i].setPositionAttributes((x, y + i * card_gap), (card_width, card_height))
+            cards[i].render(pygame, screen, font, (x, y + i * self.getCardOffset()))
+            cards[i].setPosition((x, y + i * self.getCardOffset()))
         self.setPosition(position)
-        self.setSideLengths((card_width, card_height + card_gap * len(cards)))
     
 class Stock(Piles):
     """ Rotating deck of cards to be pulled into the Foundations or Tableau"""
@@ -140,9 +148,7 @@ class Stock(Piles):
         """ Renders the cards of the tableau decending from the top card """
         x, y = position
         cards = self.getStack()
-        card_width = 80
-        card_height = 120
         if len(cards) > 0:
-            cards[-1].render(pygame, screen, font, (x, y), (card_width, card_height))
+            cards[-1].render(pygame, screen, font, (x, y))
 
         
